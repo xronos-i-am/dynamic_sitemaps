@@ -58,7 +58,7 @@ module DynamicSitemaps
     end
 
     def handle_collection
-      sitemap.collection.find_each do |record|
+      sitemap.collection.each do |record|
         if sitemap.block
           instance_exec record, &sitemap.block
         else
@@ -144,7 +144,8 @@ module DynamicSitemaps
 
     def format_url(url)
       is_active_record = defined?(ActiveRecord::Base) && url.is_a?(ActiveRecord::Base)
-      if is_active_record
+      is_mongoid_document = defined?(Mongoid::Document) && url.is_a?(Mongoid::Document)
+      if is_active_record || is_mongoid_document
         polymorphic_url(url)
       else
         url
