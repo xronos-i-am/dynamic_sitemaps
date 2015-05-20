@@ -37,7 +37,16 @@ module DynamicSitemaps
 
         temp_files = File.join(DynamicSitemaps.temp_path, folder, "*.xml")
         FileUtils.mv Dir.glob(temp_files), destination
+
+        Dir.glob(File.join(destination, "*")).each do |file_path|
+          next if file_path =~ /.gz$/
+          Zlib::GzipWriter.open("#{file_path}.gz") do |f|
+            f.write IO.binread(file_path)
+          end
+          File.unlink(file_path)
+        end
       end
+
       remove_temp_dir
     end
 
